@@ -40,7 +40,7 @@ return {
                 "gopls", -- Go
                 "clangd", -- C/C++
                 "asm_lsp", -- Assembly
-                "ts_ls", -- TypeScript
+                -- "ts_ls", -- using typescript-tools.nvim instead
                 "pyright", -- Python
                 "zls", -- Zig
             },

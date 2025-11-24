@@ -4,11 +4,12 @@ return {
     dependencies = {
         "L3MON4D3/LuaSnip",
         "giuxtaposition/blink-cmp-copilot",
+        "windwp/nvim-autopairs",
     },
+    build = "cargo build --release",
     accept = { auto_brackets = { enabled = true }, },
     documentation = { auto_show = true, auto_show_delay_ms = 500 },
     ghost_text = { enabled = true },
-
     keys = {
         {
             "<Tab>",
@@ -42,6 +43,7 @@ return {
                 "snippets",
                 "buffer",
                 "path",
+		"lazydev",
             },
             providers = {
                 copilot = {
@@ -50,7 +52,13 @@ return {
                     score_offset = 100,
                     async = true,
                 },
+		lazydev = {
+			name = "LazyDev",
+			module = "lazydev.integrations.blink",
+			score_offset = 100,
+		}
             }
         },
+        fuzzy = { implementation = "prefer_rust" },
     },
 }

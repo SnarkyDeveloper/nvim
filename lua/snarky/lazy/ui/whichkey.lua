@@ -8,6 +8,11 @@ return {
   opts = {
     preset = "helix",
     defaults = {},
+    icons = {
+      rules = {
+        { pattern = ".*", icon = "" },
+      },
+    },
     spec = {
       {
         mode = { "n", "x" },

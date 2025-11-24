@@ -27,7 +27,7 @@ return {
             additional_vim_regex_highlighting = false,
         },
         indent = { enable = true }, -- auto-indent based on lang (like vsc)
-        autoinstall = { enable = true }
+        auto_install = true,
     },
     config = function(_, opts)
         require("nvim-treesitter.configs").setup(opts)

@@ -51,3 +51,12 @@ vim.keymap.set("n", "'", "j") -- down
 -- switch buffers
 vim.keymap.set("n", "<C-w>[", "<C-w>h")
 vim.keymap.set("n", "<C-w>]", "<C-w>l")
+
+
+-- alt + up/down to move line up/down
+vim.keymap.set("n", "<A-Up>", ":m .-2<CR>==") -- up
+vim.keymap.set("n", "<A-Down>", ":m .+1<CR>==") -- down
+vim.keymap.set("i", "<A-Up>", "<ESC>:m .-2<CR>==gi") -- up
+vim.keymap.set("i", "<A-Down>", "<ESC>:m .+1<CR>==gi") -- down
+vim.keymap.set("v", "<A-Up>", ":m '<-2<CR>gv=gv") -- up
+vim.keymap.set("v", "<A-Down>", ":m '>+1<CR>gv=gv") -- down

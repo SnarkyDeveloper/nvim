@@ -15,6 +15,9 @@ return {
       vim.keymap.set("n", "<leader>e", function()
         vim.cmd("Neotree toggle")
       end)
+     -- Disable netrw after loading neotree to prevent conflicts
+     vim.g.loaded_netrw = 1
+     vim.g.loaded_netrwPlugin = 1
     end
   }
 }

@@ -3,7 +3,6 @@ require("snarky.lazy_init")
 require("snarky.keymaps")
 
 -- settings
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.opt.autochdir = true
+vim.opt.autochdir = false
 vim.g.python3_host_prog = './.venv/bin/python'
+vim.opt.whichwrap:append("b,s,<,>,[,],h,l,~") -- enable soft wrapping movement for all keys
