@@ -11,7 +11,7 @@ local root_files = {
   'Cargo.toml',
 }
 
-require("snarky.inlay_hint_fix")
+require("snarky.inlay")
 
 return {
     "neovim/nvim-lspconfig",
