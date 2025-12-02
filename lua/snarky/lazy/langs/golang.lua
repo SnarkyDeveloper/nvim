@@ -1,15 +1,15 @@
 return {
   "ray-x/go.nvim",
-  dependencies = {  -- optional packages
+  dependencies = {
     "ray-x/guihua.lua",
     "neovim/nvim-lspconfig",
     "nvim-treesitter/nvim-treesitter",
   },
-  ft = "go",
+  ft = {"go", 'gomod'},
   opts = {
-    goimport = "gopls", -- if set to 'gopls' will use gopls format tool
+    goimport = "gopls",
     fillstruct = 'gopls',
-    gofmt = 'gofumpt', -- if set to gopls will use gopls format tool
+    gofmt = 'gopls',
     tag_transform = false,
     test_template = "",
     test_template_dir = "",
@@ -46,6 +46,5 @@ return {
     })
   end,
   event = {"CmdlineEnter"},
-  ft = {"go", 'gomod'},
-  build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
+  build = ':lua require("go.install").update_all_sync()'
 }
