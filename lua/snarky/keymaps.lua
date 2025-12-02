@@ -60,3 +60,10 @@ vim.keymap.set("i", "<A-Up>", "<ESC>:m .-2<CR>==gi") -- up
 vim.keymap.set("i", "<A-Down>", "<ESC>:m .+1<CR>==gi") -- down
 vim.keymap.set("v", "<A-Up>", ":m '<-2<CR>gv=gv") -- up
 vim.keymap.set("v", "<A-Down>", ":m '>+1<CR>gv=gv") -- down
+
+-- Comment with ctrl + / (like vsc)
+vim.keymap.set("n", "<C-_>", function() require('Comment.api').toggle.linewise.current() end, { noremap = true, silent = true })
+
+
+-- Jump to definition in a new buffer
+vim.api.nvim_set_keymap('n', 'gd', ':tab split | lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true, desc = "Goto Definition (new tab)" })
