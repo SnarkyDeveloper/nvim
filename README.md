@@ -15,5 +15,5 @@ Please ensure you have cargo and the rust toolchain installed on your system as 
 I have made a very simple plug and play setup script, which you can run by doing the following. You can also clone  the git repository and manually transfer over your settings and old configuration files. Make sure to install [the dependencies.](#dependencies)
 
 ```bash
-curl -L https://raw.githubusercontent.com/SnarkyDeveloper/nvim/refs/heads/main/setup.sh | bash'
+curl -sL https://raw.githubusercontent.com/SnarkyDeveloper/nvim/refs/heads/main/setup.sh | bash
 ```
