@@ -10,6 +10,7 @@ return {
             delete = { text = "-" },
             topdelete = { text = "‾" },
             changedelete = { text = "~" },
-        }
-    }
+        },
+    },
+    enabled=false, -- mini.diff instead
 }
