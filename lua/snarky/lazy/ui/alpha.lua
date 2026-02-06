@@ -121,6 +121,7 @@ return {
       local text = string.format("󰒲  Lazy loaded %d/%d plugins in %.2fms", initPlugins, stats.count, stats.startuptime)
       footer.val = { "", text }
       vim.cmd("AlphaRedraw")
+      lazy.load({ plugins = { "themery.nvim" } })
     end
 
     local layout = {

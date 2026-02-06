@@ -1,5 +1,5 @@
 local enabled = {
-    ai = true,
+    ai = false,
     misc = true,
     langs = true,
     ui = true,

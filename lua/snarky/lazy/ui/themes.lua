@@ -1,7 +1,7 @@
 return {
   {
     "zaldih/themery.nvim",
-    lazy = false,
+    cmd = "Themery",
     config = function()
       local themery = require("themery")
       themery.setup({
