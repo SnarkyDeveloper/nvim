@@ -1,6 +1,6 @@
 return {
     "saghen/blink.cmp",
-    event = "InsertEnter",
+    event = { "InsertEnter", "cmdlineEnter"},
     dependencies = {
         "L3MON4D3/LuaSnip",
         "giuxtaposition/blink-cmp-copilot",

@@ -5,6 +5,7 @@ local enabled = {
     ui = true,
     editor = true,
     git = true,
+    sessions = true,
 }
 
 local imports = {}
