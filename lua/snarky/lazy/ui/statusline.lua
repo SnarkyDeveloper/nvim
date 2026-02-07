@@ -10,24 +10,16 @@ return {
     -- Check if device has a battery
     local function has_battery()
       -- Check for battery on Linux
-      local handle = io.popen("ls /sys/class/power_supply/ 2>/dev/null | grep -i bat")
-      if handle then
-        local result = handle:read("*a")
-        handle:close()
-        if result and result ~= "" then
-          return true
-        end
+      local result = vim.fn.system("ls /sys/class/power_supply/ 2>/dev/null | grep -i bat")
+      if vim.v.shell_error == 0 and result and result ~= "" then
+        return true
       end
       
       -- Check for battery on macOS
       if vim.fn.has('mac') == 1 then
-        local mac_handle = io.popen("pmset -g batt 2>/dev/null | grep -i 'InternalBattery'")
-        if mac_handle then
-          local mac_result = mac_handle:read("*a")
-          mac_handle:close()
-          if mac_result and mac_result ~= "" then
-            return true
-          end
+        local mac_result = vim.fn.system("pmset -g batt 2>/dev/null | grep -i 'InternalBattery'")
+        if vim.v.shell_error == 0 and mac_result and mac_result ~= "" then
+          return true
         end
       end
       
@@ -74,7 +66,7 @@ return {
 
       require('lualine').setup({
         options = {
-          theme = 'auto', -- should work when themery udpates it lol
+          theme = 'auto', -- should work when themery updates it lol
           component_separators = { left = '|', right = '' },
           section_separators = { left = '', right = '' },
           icons_enabled = true,
