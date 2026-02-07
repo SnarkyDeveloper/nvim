@@ -7,10 +7,33 @@ return {
     'lewis6991/gitsigns.nvim' 
   },
   config = function()
-    require("battery").setup({
-      update_rate_seconds = 15,
-      show_status_line = true,
-    })
+    -- Check if device has a battery
+    local function has_battery()
+      -- Check for battery on Linux
+      local result = vim.fn.system("ls /sys/class/power_supply/ 2>/dev/null | grep -i bat")
+      if vim.v.shell_error == 0 and result and result ~= "" then
+        return true
+      end
+      
+      -- Check for battery on macOS
+      if vim.fn.has('mac') == 1 then
+        local mac_result = vim.fn.system("pmset -g batt 2>/dev/null | grep -i 'InternalBattery'")
+        if vim.v.shell_error == 0 and mac_result and mac_result ~= "" then
+          return true
+        end
+      end
+      
+      return false
+    end
+
+    local battery_available = has_battery()
+
+    if battery_available then
+      require("battery").setup({
+        update_rate_seconds = 15,
+        show_status_line = true,
+      })
+    end
 
     local function git_blame()
       local blame_info = vim.b.gitsigns_blame_line_dict
@@ -30,9 +53,20 @@ return {
     end
 
     local function setup_lualine()
+      -- Build lualine_x components conditionally
+      local lualine_x_components = {}
+      
+      if battery_available then
+        table.insert(lualine_x_components, function() return require("battery").get_status_line() end)
+      end
+      
+      table.insert(lualine_x_components, 'encoding')
+      table.insert(lualine_x_components, 'fileformat')
+      table.insert(lualine_x_components, 'filetype')
+
       require('lualine').setup({
         options = {
-          theme = 'auto', -- should work when themery udpates it lol
+          theme = 'auto', -- should work when themery updates it lol
           component_separators = { left = '|', right = '' },
           section_separators = { left = '', right = '' },
           icons_enabled = true,
@@ -46,12 +80,7 @@ return {
             { 'filename', path = 1 },
             { git_blame, cond = function() return vim.b.gitsigns_blame_line_dict ~= nil end }
           },
-          lualine_x = { 
-            function() return require("battery").get_status_line() end,
-            'encoding', 
-            'fileformat', 
-            'filetype' 
-          },
+          lualine_x = lualine_x_components,
         },
         extensions = { 'fugitive', 'nvim-tree' }
       })
