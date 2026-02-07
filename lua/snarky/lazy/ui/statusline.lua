@@ -1,92 +1,99 @@
-local function parse_rgb(s)
-    if not s or type(s) ~= 'string' or #s < 7 then
-        return {0, 0, 0} -- fallback to black
-    end
-    local tail_s = s:sub(2)
-    local res = {}
-    for i in string.gmatch(tail_s, "%x%x") do
-        table.insert(res, tonumber(i, 16))
-    end
-    return res
-end
-
-local function rgb_to_string(r, g, b)
-    return string.format("#%02x%02x%02x", r, g, b)
-end
-
-local function checked_add(base, add)
-    local result = base + add
-    return math.max(0, math.min(255, result))
-end
-
-local function colormod(a, v1, v2, v3)
-    return rgb_to_string(
-        checked_add(a[1], v1),
-        checked_add(a[2], v2),
-        checked_add(a[3], v3)
-    )
-end
-
 return {
-    'nvim-lualine/lualine.nvim',
-    lazy = true,
-    event = 'VeryLazy',
-    config = function()
-        local black = parse_rgb(vim.g.terminal_color_0 or '#1d2021') -- fallback to gruvbox dark background
-        local function mode(x) 
-            x = x or '#ebdbb2' -- fallback to gruvbox foreground
-            return { bg = colormod(black, -6, -6, -6), fg = x, gui = 'bold' } 
+  'nvim-lualine/lualine.nvim',
+  lazy = true,
+  event = 'VeryLazy',
+  dependencies = { 
+    'justinhj/battery.nvim', 
+    'lewis6991/gitsigns.nvim' 
+  },
+  config = function()
+    -- Check if device has a battery
+    local function has_battery()
+      -- Check for battery on Linux
+      local result = vim.fn.system("ls /sys/class/power_supply/ 2>/dev/null | grep -i bat")
+      if vim.v.shell_error == 0 and result and result ~= "" then
+        return true
+      end
+      
+      -- Check for battery on macOS
+      if vim.fn.has('mac') == 1 then
+        local mac_result = vim.fn.system("pmset -g batt 2>/dev/null | grep -i 'InternalBattery'")
+        if vim.v.shell_error == 0 and mac_result and mac_result ~= "" then
+          return true
         end
+      end
+      
+      return false
+    end
 
-        local def = { 
-            bg = rgb_to_string(black[1] + 15, black[2] + 15, black[3] + 15), 
-            fg = vim.g.terminal_color_15 or '#ebdbb2' -- fallback to gruvbox foreground
-        }
-        local def_bold = vim.deepcopy(def)
-        def_bold.gui = 'bold'
-        local custom_gruvbox = {
-            normal = {
-                a = mode(vim.g.terminal_color_15 or '#ebdbb2'),
-                b = def,
-                c = def,
-                z = def_bold,
-            },
-            insert = {
-                a = mode(vim.g.terminal_color_14 or '#8ec07c'),
-                b = def, c = def, z = def_bold,
-            },
-            visual = {
-                a = mode(vim.g.terminal_color_11 or '#fabd2f'),
-                b = def, c = def, z = def_bold,
-            },
-            replace = {
-                a = mode(vim.g.terminal_color_9 or '#fb4934'),
-                b = def, c = def, z = def_bold,
-            },
-            command = {
-                a = mode(vim.g.terminal_color_13 or '#d3869b'),
-                b = def, c = def, z = def_bold,
-            },
-            terminal = {
-                a = mode(vim.g.terminal_color_15 or '#ebdbb2'),
-                b = def, c = def, z = def_bold,
-            },
-            inactive = {
-                a = def,
-                b = def, c = def, z = def_bold,
-            },
-        }
+    local battery_available = has_battery()
 
-        local config = require('lualine').get_config()
-        config.options.theme = custom_gruvbox
-        config.options.component_separators = { left = '|', right = '' }
-        config.options.section_separators = { left = '', right = '' }
-        config.options.icons_enabled = true
-        -- config.options.globalstatus = true
-        config.extensions = { 'fugitive', 'nvim-tree' }
-        config.sections.lualine_b[2] = { 'diff', symbols = { added = ' ', modified = ' ', removed = ' ' } }
-        config.sections.lualine_c[1] = { 'filename', path = 1 }
+    if battery_available then
+      require("battery").setup({
+        update_rate_seconds = 15,
+        show_status_line = true,
+      })
+    end
 
-        require('lualine').setup(config)
-    end,
+    local function git_blame()
+      local blame_info = vim.b.gitsigns_blame_line_dict
+      if not blame_info or vim.tbl_isempty(blame_info) then return "" end
+
+      local is_uncommitted = blame_info.author == "Not Committed Yet"
+      local author = is_uncommitted and "You" or blame_info.author
+      
+      local date_str
+      if is_uncommitted then
+        date_str = "Today"
+      else
+        date_str = os.date("%m/%d/%y", blame_info.author_time)
+      end
+
+      return string.format(" %s (%s)", author, date_str)
+    end
+
+    local function setup_lualine()
+      -- Build lualine_x components conditionally
+      local lualine_x_components = {}
+      
+      if battery_available then
+        table.insert(lualine_x_components, function() return require("battery").get_status_line() end)
+      end
+      
+      table.insert(lualine_x_components, 'encoding')
+      table.insert(lualine_x_components, 'fileformat')
+      table.insert(lualine_x_components, 'filetype')
+
+      require('lualine').setup({
+        options = {
+          theme = 'auto', -- should work when themery updates it lol
+          component_separators = { left = '|', right = '' },
+          section_separators = { left = '', right = '' },
+          icons_enabled = true,
+        },
+        sections = {
+          lualine_b = {
+            'branch',
+            { 'diff', symbols = { added = ' ', modified = ' ', removed = ' ' } }
+          },
+          lualine_c = {
+            { 'filename', path = 1 },
+            { git_blame, cond = function() return vim.b.gitsigns_blame_line_dict ~= nil end }
+          },
+          lualine_x = lualine_x_components,
+        },
+        extensions = { 'fugitive', 'nvim-tree' }
+      })
+    end
+
+    -- init line
+    setup_lualine()
+
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      group = vim.api.nvim_create_augroup("LualineReload", { clear = true }),
+      callback = function()
+        require('lualine').refresh()
+      end,
+    })
+  end,
 }
