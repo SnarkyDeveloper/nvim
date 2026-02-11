@@ -1,5 +1,6 @@
 return {
   "soulis-1256/eagle.nvim",
+  event = "InsertEnter",
   opts = {
     mouse_mode = false,
     keyboard_mode = true,
