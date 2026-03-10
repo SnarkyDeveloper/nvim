@@ -66,4 +66,14 @@ vim.keymap.set("n", "<C-_>", function() require('Comment.api').toggle.linewise.c
 
 
 -- Jump to definition in a new buffer
-vim.api.nvim_set_keymap('n', 'gd', ':tab split | lua vim.lsp.buf.definition()<CR>', { noremap = true, silent = true, desc = "Goto Definition (new tab)" })
+vim.keymap.set('n', 'gD', function()
+  vim.cmd('vsplit')
+  vim.lsp.buf.definition()
+end, { desc = "Goto Definition (split)" })
+
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {
+    noremap = true,
+    silent = true,
+    desc = "Goto Definition (New Buffer)"
+})
+
